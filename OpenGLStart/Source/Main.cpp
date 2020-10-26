@@ -15,7 +15,7 @@ int main(void)
 
 
     /* Cree una ventana en modo ventana y su contexto OpenGL */
-    window = glfwCreateWindow(1200, 720, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1200, 720, "First window", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
