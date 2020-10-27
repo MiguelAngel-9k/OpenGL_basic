@@ -69,4 +69,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\TextureFragmentShader.fragmentshader" />
+    <None Include="shaders\TransformVertexShader.vertexshader" />
+  </ItemGroup>
 </Project>
