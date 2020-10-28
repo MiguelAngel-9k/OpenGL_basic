@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common\controls.cpp" />
+    <ClCompile Include="common\LoadModelClass.cpp" />
     <ClCompile Include="common\objloader.cpp" />
     <ClCompile Include="common\quaternion_utils.cpp" />
     <ClCompile Include="common\shader.cpp" />
@@ -157,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\controls.hpp" />
+    <ClInclude Include="common\LoadModelClass.h" />
     <ClInclude Include="common\objloader.hpp" />
     <ClInclude Include="common\quaternion_utils.hpp" />
     <ClInclude Include="common\shader.hpp" />

@@ -1,5 +1,5 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
-# File Created: 09.04.2020 11:47:59
+# File Created: 28.10.2020 15:27:59
 
 newmtl peopleColors
 	Ns 0.0000
@@ -12,5 +12,5 @@ newmtl peopleColors
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka peopleColors.png
-	map_Kd peopleColors.png
+	map_Ka D:\VSproyects\OpenGL_basic\OpenGLStart\Modelos\Male\peopleColors.png
+	map_Kd D:\VSproyects\OpenGL_basic\OpenGLStart\Modelos\Male\peopleColors.png

@@ -1,2 +1,2 @@
-﻿  controls.cpp
-d:\vsproyects\opengl_basic\openglstart\common\controls.cpp(100): error C2065: 'up': identificador no declarado
+﻿  Main.cpp
+  OpenGLStart.vcxproj -> D:\VSproyects\OpenGL_basic\Debug\OpenGLStart.exe
