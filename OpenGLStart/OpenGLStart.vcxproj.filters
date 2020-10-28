@@ -70,7 +70,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\TextureFragmentShader.fragmentshader" />
     <None Include="shaders\TransformVertexShader.vertexshader" />
+    <None Include="shaders\TextureFragmentShader.fragmentshader" />
   </ItemGroup>
 </Project>

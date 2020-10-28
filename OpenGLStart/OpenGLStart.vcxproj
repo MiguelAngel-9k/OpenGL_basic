@@ -166,8 +166,8 @@
     <ClInclude Include="common\vboindexer.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\TextureFragmentShader.fragmentshader" />
     <None Include="shaders\TransformVertexShader.vertexshader" />
+    <None Include="shaders\TextureFragmentShader.fragmentshader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
