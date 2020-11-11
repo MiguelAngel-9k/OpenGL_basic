@@ -85,11 +85,16 @@ int main(void)
 	//// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("shaders/TransformVertexShader.vertexshader", "shaders/TextureFragmentShader.fragmentshader");
 
+	//sus texturas
+	GLuint hombreTexturas = loadDDS("Modelos/HombreR/HombreR/hombre-textura.dds");
+	//id para la textura
+	GLuint TextureIDhombre = glGetUniformLocation(programID, "myTextureSampler");
+
 	//// Get a handle for our "MVP" uniform
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
 
 	//// Load the texture
-	GLuint Texture = loadDDS("Modelos/Male/humansColors.dds");
+	GLuint Texture = loadDDS("Modelos/Protagonista/Textura.dds");
 
 	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
 
@@ -97,7 +102,7 @@ int main(void)
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
 	std::vector<glm::vec3> normals; // Won't be used at the moment.
-	bool res = loadOBJ("Modelos/Male/Male.obj", vertices, uvs, normals);
+	bool res = loadOBJ("Modelos/Protagonista/PROTAGONISTA.obj", vertices, uvs, normals);
 
 
 	GLuint vertexbuffer;
@@ -109,6 +114,23 @@ int main(void)
 	glGenBuffers(1, &uvbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
 	glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+
+	//crear y compilar shaders para el modelo del pritata	
+	std::vector<glm::vec3> verticesH;
+	std::vector<glm::vec2> uvsH;
+	std::vector<glm::vec3> normalsH; // Won't be used at the moment.
+	bool resH = loadOBJ("Modelos/HombreR/HombreR/HombreR.obj", verticesH, uvsH, normalsH);
+
+
+	GLuint vertexbufferH;
+	glGenBuffers(1, &vertexbufferH);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbufferH);
+	glBufferData(GL_ARRAY_BUFFER, verticesH.size() * sizeof(glm::vec3), &verticesH[0], GL_STATIC_DRAW);
+
+	GLuint uvbufferH;
+	glGenBuffers(1, &uvbufferH);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbufferH);
+	glBufferData(GL_ARRAY_BUFFER, uvsH.size() * sizeof(glm::vec2), &uvsH[0], GL_STATIC_DRAW);
 
 	// Get a handle for our "myTextureSampler" uniform
 	//GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
@@ -255,6 +277,37 @@ int main(void)
 
 		// Draw the triangle !
 		glDrawArrays(GL_TRIANGLES, 0,vertices.size()); // 12*3 indices starting at 0 -> 12 triangles
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);		
+
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbufferH);
+		glVertexAttribPointer(
+			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// 2nd attribute buffer : UVs
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbufferH);
+		glVertexAttribPointer(
+			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			2,                                // size : U+V => 2
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+
+		// Draw the triangle !
+		glDrawArrays(GL_TRIANGLES, 0, verticesH.size());
+
+
+		glEnableVertexAttribArray(0);
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
