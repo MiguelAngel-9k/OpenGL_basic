@@ -21,6 +21,67 @@ using namespace glm;
 #include <../../common/objloader.hpp>
 #include "../../common/LoadModelClass.cpp"
 
+class Modelo {
+public:
+	Modelo(){}
+
+	GLuint Texture;
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> uvs;
+	std::vector<glm::vec3> normals;
+	GLuint vertexbuffer;
+	GLuint uvbuffer;
+
+	Modelo(const char* model_path, const char* texture_path) {
+
+		Texture = loadDDS(texture_path);
+
+		bool res = loadOBJ(model_path,vertices, uvs, normals);
+
+		glGenBuffers(1, &vertexbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+
+		glGenBuffers(1, &uvbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+		glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+	}
+
+	void Dibujar() {
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glVertexAttribPointer(
+			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// 2nd attribute buffer : UVs
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+		glVertexAttribPointer(
+			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			2,                                // size : U+V => 2
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+
+		// Draw the triangle !
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+	}
+
+	~Modelo() {
+		glDeleteBuffers(1, &vertexbuffer);
+		glDeleteBuffers(1, &uvbuffer);
+	}
+
+};
+
 int main(void)
 {
 	// Initialise GLFW
@@ -77,6 +138,8 @@ int main(void)
 	glEnable(GL_CULL_FACE);
 
 	//Model *persona = new Model("Modelos/Male/Male.obj", "Modelos/Male/humansColors.dds");
+	
+  #pragma region MODELOS_HUMANOS
 
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
@@ -85,146 +148,20 @@ int main(void)
 	//// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("shaders/TransformVertexShader.vertexshader", "shaders/TextureFragmentShader.fragmentshader");
 
-	//sus texturas
-	GLuint hombreTexturas = loadDDS("Modelos/HombreR/HombreR/hombre-textura.dds");
-	//id para la textura
-	GLuint TextureIDhombre = glGetUniformLocation(programID, "myTextureSampler");
-
 	//// Get a handle for our "MVP" uniform
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
 
 	//// Load the texture
-	GLuint Texture = loadDDS("Modelos/Protagonista/Textura.dds");
+	Modelo *hombre = new Modelo("Modelos/HombreR/HombreR/HombreR.obj", "Modelos/HombreR/HombreR/hombre-textura.dds");
+	Modelo *mujer = new Modelo("Modelos/Mujer/Mujer/MUJER2.obj", "Modelos/Mujer/Mujer/Mujer-Textura.dds");
+	Modelo *casa = new Modelo("Modelos/casa_vieja/house_01.obj", "Modelos/casa_vieja/DSC_5871_.dds");
+	Modelo *protagonista = new Modelo("Modelos/Protagonista/PROTAGONISTA.obj", "Modelos/Protagonista/Textura.dds");
+	/*GLuint Texture = loadDDS("Modelos/casa_vieja/DSC_5871_.dds");*/
 
 	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
 
-	//// Read our .obj file
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec2> uvs;
-	std::vector<glm::vec3> normals; // Won't be used at the moment.
-	bool res = loadOBJ("Modelos/Protagonista/PROTAGONISTA.obj", vertices, uvs, normals);
-
-
-	GLuint vertexbuffer;
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
-
-	GLuint uvbuffer;
-	glGenBuffers(1, &uvbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
-
-	//crear y compilar shaders para el modelo del pritata	
-	std::vector<glm::vec3> verticesH;
-	std::vector<glm::vec2> uvsH;
-	std::vector<glm::vec3> normalsH; // Won't be used at the moment.
-	bool resH = loadOBJ("Modelos/HombreR/HombreR/HombreR.obj", verticesH, uvsH, normalsH);
-
-
-	GLuint vertexbufferH;
-	glGenBuffers(1, &vertexbufferH);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbufferH);
-	glBufferData(GL_ARRAY_BUFFER, verticesH.size() * sizeof(glm::vec3), &verticesH[0], GL_STATIC_DRAW);
-
-	GLuint uvbufferH;
-	glGenBuffers(1, &uvbufferH);
-	glBindBuffer(GL_ARRAY_BUFFER, uvbufferH);
-	glBufferData(GL_ARRAY_BUFFER, uvsH.size() * sizeof(glm::vec2), &uvsH[0], GL_STATIC_DRAW);
-
-	// Get a handle for our "myTextureSampler" uniform
-	//GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
-
-	// Our vertices. Tree consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
-	// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-	/*static const GLfloat g_vertex_buffer_data[] = {
-		-1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f,
-		 1.0f, 1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f,-1.0f,
-		 1.0f,-1.0f,-1.0f,
-		 1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f,-1.0f, 1.0f,
-		 1.0f,-1.0f, 1.0f,
-		 1.0f, 1.0f, 1.0f,
-		 1.0f,-1.0f,-1.0f,
-		 1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f,-1.0f,
-		 1.0f, 1.0f, 1.0f,
-		 1.0f,-1.0f, 1.0f,
-		 1.0f, 1.0f, 1.0f,
-		 1.0f, 1.0f,-1.0f,
-		-1.0f, 1.0f,-1.0f,
-		 1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		 1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f,
-		 1.0f,-1.0f, 1.0f
-	};*/
-
-	// Two UV coordinatesfor each vertex. They were created withe Blender.
-	/*static const GLfloat g_uv_buffer_data[] = {
-		0.000059f, 0.000004f,
-		0.000103f, 0.336048f,
-		0.335973f, 0.335903f,
-		1.000023f, 0.000013f,
-		0.667979f, 0.335851f,
-		0.999958f, 0.336064f,
-		0.667979f, 0.335851f,
-		0.336024f, 0.671877f,
-		0.667969f, 0.671889f,
-		1.000023f, 0.000013f,
-		0.668104f, 0.000013f,
-		0.667979f, 0.335851f,
-		0.000059f, 0.000004f,
-		0.335973f, 0.335903f,
-		0.336098f, 0.000071f,
-		0.667979f, 0.335851f,
-		0.335973f, 0.335903f,
-		0.336024f, 0.671877f,
-		1.000004f, 0.671847f,
-		0.999958f, 0.336064f,
-		0.667979f, 0.335851f,
-		0.668104f, 0.000013f,
-		0.335973f, 0.335903f,
-		0.667979f, 0.335851f,
-		0.335973f, 0.335903f,
-		0.668104f, 0.000013f,
-		0.336098f, 0.000071f,
-		0.000103f, 0.336048f,
-		0.000004f, 0.671870f,
-		0.336024f, 0.671877f,
-		0.000103f, 0.336048f,
-		0.336024f, 0.671877f,
-		0.335973f, 0.335903f,
-		0.667969f, 0.671889f,
-		1.000004f, 0.671847f,
-		0.667979f, 0.335851f
-	};*/
-
-	/*GLuint vertexbuffer;
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-	GLuint uvbuffer;
-	glGenBuffers(1, &uvbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);*/
+	#pragma endregion MODELOS_HUMANOS
+	
 
 	do {
 
@@ -245,66 +182,11 @@ int main(void)
 		// in the "MVP" uniform
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
-		// Bind our texture in Texture Unit 0
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_2D, Texture);
-		// Set our "myTextureSampler" sampler to user Texture Unit 0
-		//glUniform1i(TextureID, 0);
 
-		// 1rst attribute buffer : vertices
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glVertexAttribPointer(
-			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-
-		// 2nd attribute buffer : UVs
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-		glVertexAttribPointer(
-			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-			2,                                // size : U+V => 2
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
-
-		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES, 0,vertices.size()); // 12*3 indices starting at 0 -> 12 triangles
-
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbufferH);
-		glVertexAttribPointer(
-			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-
-		// 2nd attribute buffer : UVs
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, uvbufferH);
-		glVertexAttribPointer(
-			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-			2,                                // size : U+V => 2
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
-
-		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES, 0, verticesH.size());
-
-
+		hombre->Dibujar();
+		mujer->Dibujar();
+		casa->Dibujar();
+		protagonista->Dibujar();
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
@@ -317,12 +199,17 @@ int main(void)
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		glfwWindowShouldClose(window) == 0);
 
-	// Cleanup VBO and shader
-	//glDeleteBuffers(1, &vertexbuffer);
-	////glDeleteBuffers(1, &uvbuffer);
-	//glDeleteProgram(programID);
-	////glDeleteTextures(1, &TextureID);
-	//glDeleteVertexArrays(1, &VertexArrayID);
+	 //Cleanup VBO and shader
+	/*glDeleteBuffers(1, &vertexbuffer);
+	glDeleteBuffers(1, &uvbuffer);*/
+	delete hombre;
+	delete mujer;
+	delete casa;
+	delete protagonista;
+
+	glDeleteProgram(programID);
+	glDeleteTextures(1, &TextureID);
+	glDeleteVertexArrays(1, &VertexArrayID);
 
 	// Close OpenGL window and terminate GLFW
 	//delete persona;
