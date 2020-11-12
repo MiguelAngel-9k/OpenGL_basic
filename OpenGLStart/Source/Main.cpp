@@ -278,9 +278,7 @@ int main(void)
 		// Draw the triangle !
 		glDrawArrays(GL_TRIANGLES, 0,vertices.size()); // 12*3 indices starting at 0 -> 12 triangles
 
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);		
-
+		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbufferH);
 		glVertexAttribPointer(
 			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
@@ -307,7 +305,6 @@ int main(void)
 		glDrawArrays(GL_TRIANGLES, 0, verticesH.size());
 
 
-		glEnableVertexAttribArray(0);
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
